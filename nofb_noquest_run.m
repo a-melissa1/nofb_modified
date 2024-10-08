@@ -6,15 +6,6 @@ p.TestMode = 0;
 %% Basic Setup Parameters
 p.ScreenDist = 74;
  
-% %% Adaptive Paradigm Parameters
-% p.AdaptivePmtr = 'Vofs';
-% p.AdaptiveProc = 'QUEST';
-% p.VernierOffset = 350; % This will be different for different conditions
-% p.TestValueRange = [1; 450];
-% p.QuestThreshPriorSD = 91; % quest adaptiveness
-% p.QuestSigma = 3; % quest slope
-% p.QuestLapseRate = 0.08;
- 
 %% Experiment Details
 p.PracticeTrials = 10;%8
 p.LineColor = [0,0,0];

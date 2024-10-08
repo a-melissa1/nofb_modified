@@ -21,17 +21,7 @@ p.addParamValue('InfoScreenFct', @(wnd,txt,isTest) lpsy.showInfoScreen(wnd,txt,i
 p.addParamValue('NegFeedbackVol', 20, @isscalar); % [%] Volume for acoustical feedback for wrong response.
 p.addParamValue('WarningsVol', 20, @isscalar); % [%] Volume of low one for warning beeps (too early response, no response).
  
-% p.addParamValue('AdaptivePmtr', 'Vofs', @ischar); % Which parameter ex {'none','Vofs','Vdur'} is controlled by PEST/QUEST - not case-sensitive.
-% p.addParamValue('PestStartStep', 30, @isscalar); % [percent, WRT start value] Size of first step in PEST procedure (assuming it is a downward step).
-% p.addParamValue('PestStopStep', 0, @isscalar); % [percent, WRT current value] If >0, finish the run as soon as the internal step width is smaller than this limit.
-% p.addParamValue('PestWALD', 1.5, @isscalar); % PEST's WALD constant
- 
 p.addParamValue('TestValueRange', [], @(x) isempty(x) || numel(x)==2); % [same units as controlled parameter] Absolute test level limits. This range might be further limited when needed.
- 
-% p.addParamValue('AdaptiveProc', 'QUEST', @ischar); % ex {'PEST','QUEST'}, not case-sensitive, only used if 'AdaptivePmtr'~='none'.
-% p.addParamValue('QuestThreshPriorSD', 50, @(x) isscalar(x) && x>0); % [dB] SD of QUEST's prior for threshold (the mean is given by the start value).
-% p.addParamValue('QuestSigma', 3, @(x) isscalar(x) && x>0); % [dB] QUEST's sigma parameter. Set this to some average value found in pilot experiments.
-% p.addParamValue('QuestLapseRate', 0.04, @(x) isscalar(x) && x>=0 && x<=0.2);% ex [0,0.2] Lapse rate assumed by QUEST. This should be set rather high to better cope with early lapses.
  
 p.addParamValue('PracticeTrials', 8, @isvector) % Number of practice trials, or a vector of test level values, with one value per practice trial.
 % If not a vector and if a paramter will be PEST-controlled, the first half of the practice trials will be presented at
@@ -158,35 +148,6 @@ pp.fl_offset = lpsy.arcsec2pix(p.fl_offset);
 pp.n_flankers = p.n_flankers;
 pp.flanker_len = lpsy.arcsec2pix(p.flanker_len);
  
- 
- 
-%--- The 'pest' structure is also used for QUEST.
-% pest = [];
-% switch lower(p.AdaptivePmtr)
-% case 'vdur'
-% if isempty(pp.TestValueRange)
-% pp.TestValueRange = [0.05, 2] * p.VernierDuration;
-% end
-% pp.TestValueRange = min(0, max(1, round(lpsy.msec2frame(pp.TestValueRange))));
-% pest.ppName = 'VernierDuration';
-% pest.pp2user = @(x) lpsy.frame2msec(x);
-% pest.user2pp = @(x) round(lpsy.msec2frame(x));
-% pest.dataPoolBase = 20;
-% pest.userUnit = 'ms';
-% case 'vofs'
-% if isempty(pp.TestValueRange)
-% pp.TestValueRange = [0.05, 2] * p.VernierOffset;
-% end
-% %--- Rounding might follow below, according to p.lineMode etc.
-% pp.TestValueRange = max(0.1, lpsy.arcsec2pix(pp.TestValueRange));
-% pest.ppName = 'VernierOffset';
-% pest.pp2user = @(x) lpsy.pix2arcsec(x);
-% pest.user2pp = @(x) lpsy.arcsec2pix(x);
-% pest.dataPoolBase = 10;
-% pest.userUnit = 'arcsec';
-% end
- 
- 
 %--- For the sake of simplicity, we never use anti-aliasing along the vertical
 % axis, and we always center the stimulus between screen pixels vertically.
 % This requires the vernier gap to have an even number of pixels.
@@ -227,51 +188,7 @@ pp.ResponseTimeout = p.ResponseTimeout;
 end
  
 pChance = 0.5;
- 
-% myPEST = [];
-% myQUEST = [];
-% if ~isempty(pest)
-% switch lower(p.AdaptiveProc)
-% case 'pest'
-% myPEST = PESTclass(pp.(pest.ppName),...
-% 'step_abs', p.PestStartStep/100*pp.(pest.ppName),...
-% 'range', pp.TestValueRange,...
-% 'wald', p.PestWALD,...
-% 'target', pChance + 0.5*(1-pChance));
-%
-% case 'quest'
-% %--- We pick a rather high lapse rate in order to make the procedure
-% % more robust against lapses, especially early lapses.
-%
-% myQUEST = BestPESTclass('ofsPriorMN', pp.(pest.ppName),...
-% 'valRange',pp.TestValueRange,...
-% 'ofsPriorSD', max(1e-4, p.QuestThreshPriorSD),...
-% 'sigma', p.QuestSigma,...
-% 'pChance', pChance, ...
-% 'pLapse', p.QuestLapseRate,...
-% 'shape','CumGauss',...
-% 'scaling','log');
-% end
-% end
- 
-% if isscalar(p.PracticeTrials)
-% if p.PracticeTrials==0
-% practiceTestLevels = [];
-% elseif isempty(myPEST) && isempty(myQUEST)
-% practiceTestLevels = nan(1,p.PracticeTrials);
-% else
-% %--- Two test levels, 1.2*start, 0.8*start.
-% practiceTestLevels = 1.2*ones(1,p.PracticeTrials);
-% practiceTestLevels(ceil(p.PracticeTrials/2):end) = 0.8;
-% practiceTestLevels = practiceTestLevels * p.(pest.ppName);
-% practiceTestLevels = pest.user2pp(practiceTestLevels);
-% end
-% else
-% assert(~isempty(myPEST) || ~isempty(myQUEST),'Specific test levels for ''PracticeTrials'' only allowed if there is an adaptive parameter.');
-% practiceTestLevels = pest.user2pp(p.PracticeTrials);
-% end
- 
- 
+
 %% --- Prepare saving user parameters (more will follow).
 % Doing this here helps detecting errors early on (useful during program development).
 writeppp2DV(p, pp, myPEST, myQUEST, pest, practiceTestLevels, dontRoundJitterX)
@@ -281,8 +198,7 @@ InteractiveRenderTest();
 end
 %--- In case the window was open already, make sure the screen is cleared.
 lpsy.flip(wnd);
- 
- 
+
 dataCnt = 0;
 minusPlusOne = [-1,1]; % -1: left: 1:right
 vOffsetDir = minusPlusOne(randi(2));
@@ -306,40 +222,7 @@ trialCntValid = 0;
 %--- Trial loop
 while trialCntValid < maxTrialCnt(isPracticePhase+1)
 %% --- Get next test level. We shouldn't need to check here for the valid
-% value anymore, because we have taken care of that during PEST
-% initialization already.
-% if isempty(myPEST) && isempty(myQUEST)
-% dataPoolBase = 0;
-% reportLevel = lpsy.pix2arcsec(pp.VernierOffset);
-% else
-% if isPracticePhase
-% testLevel = practiceTestLevels(trialCntValid+1);
-% elseif ~isempty(myPEST)
-% testLevel = myPEST.getTestLevel();
-% else
-% testLevel = myQUEST.getTestLevel();
-% if any(strcmpi(p.AdaptivePmtr,{'vdur'}))
-% %--- Virtually increase the time resolution, which is limited by the monitor
-% % framerate, via dithering (i.e. by adding some noise). PEST/QUEST uses
-% % the pp-unit, which is frames for time variables.
-% % We don't do this for PEST because of compatibility reasons and because
-% % we would have to change the trial pooling method when fitting the
-% % psychometric function.
-% testLevel = testLevel + (rand()-0.5);
-% testLevel = max(pp.TestValueRange(1), min(pp.TestValueRange(2), testLevel));
-% end
-% end
-% %--- Round the value, which can be quite complicated in case of the vernier
-% offset, which is why we rely on pest.user2pp().
-% testLevel = pest.user2pp(pest.pp2user(testLevel));
-% pp.(pest.ppName) = testLevel;
-% if isempty(myQUEST)
-% dataPoolBase = pest.dataPoolBase;
-% else
-% dataPoolBase = pest.dataPoolBase + 40;
-% end
-% reportLevel = pest.pp2user(testLevel);
-% end
+
 if isPracticePhase
 dataPoolBase = dataPoolBase+4;
 end
@@ -601,30 +484,13 @@ data.iti(dataCnt) = round(1000*thisITI);
 data.vOnsetTi(dataCnt) = vernierOnsetSecs;
 data.stimSide(dataCnt) = side;
 data.fc_dur(dataCnt) = fd;
-%--- At last: Update PEST and check for convergence.
-% if ~isPracticePhase && isValid && startTrialCnt(2)==p.StartTrialReps(2)
-% if ~isempty(myPEST)
-% myPEST.registerResponse(isHit);
-% if myPEST.getStep_abs()/myPEST.getTestLevel() < p.PestStopStep/100
-% %--- Done.
-% break
-% end
-% elseif ~isempty(myQUEST)
-% myQUEST.registerResponse(testLevel, isHit);
-% end
-%
-% end
+
 end % trial loop
 end % practice/regular
 p.InfoScreenFct(wnd, 'done', p.TestMode~=0);
 lpsy.cleanup();
 %% --- Save the data.
 if ~strcmp(p.DvFilename, '')
-% if ~isempty(myPEST)
-% lpsy.writeDvPmtr('--> PEST: Next/final test level', pest.pp2user(myPEST.getTestLevel()),pest.userUnit,0);
-% elseif ~isempty(myQUEST)
-% lpsy.writeDvPmtr('--> QUEST: Threshold (L/R offset pooled, w/o prior)', pest.pp2user(myQUEST.getTestLevel('NoPrior')),pest.userUnit, 2);
-% end
 fid = lpsy.writeDvHeader(p.DvFilename);
 if fid>=0
 lpsy.writeDvPmtr(fid);
