@@ -1,7 +1,8 @@
 function NoFB_noQuest_run
 
 subjnr = input('Subject Code? ','s');
- 
+
+p.debug=0;
 p.TestMode = 0;
  
 %% Basic Setup Parameters
@@ -48,7 +49,7 @@ conditions_start_value = [100, 200, 200];
 %conditions_cond = conditions_cond(ix);
 %conditions_start_value = conditions_start_value(ix);
  
-conditions_ntrials = [60, 60, 60];
+conditions_ntrials = [5, 5, 5];
 for m = [0, 1]
 %% Call stimulus program.
 for cc = [1:length(conditions_cond)]
