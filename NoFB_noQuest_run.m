@@ -1,4 +1,4 @@
-function NoFB_run
+function NoFB_noQuest_run
 
 subjnr = input('Subject Code? ','s');
  
