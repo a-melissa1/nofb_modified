@@ -59,7 +59,7 @@ p.mask = m;
 p.cond = cond;
 p.DvFilename = convertStringsToChars(fullfile('results',strcat('nofb_', subjnr, '_cond',num2str(m), '_',num2str(cond),'.dv')));
 p_pvcell = struct2pvcell(p);
-NoFB(p_pvcell{:});
+NoFB_noQuest(p_pvcell{:});
 disp('done')
 end
 end
