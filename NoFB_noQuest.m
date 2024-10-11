@@ -202,20 +202,14 @@ try
     myQUEST=[]; % testing what happens if these are just left empty and never used
     pest=[];
     if isscalar(p.PracticeTrials)
-        if p.PracticeTrials==0
-            practiceTestLevels = [];
-        elseif isempty(myPEST) && isempty(myQUEST)
-            practiceTestLevels = nan(1,p.PracticeTrials);
-        else
-            %--- Two test levels, 1.2*start, 0.8*start.
-            practiceTestLevels = 1.2*ones(1,p.PracticeTrials);
-            practiceTestLevels(ceil(p.PracticeTrials/2):end) = 0.8;
-            practiceTestLevels = practiceTestLevels * p.(pest.ppName);
-            practiceTestLevels = pest.user2pp(practiceTestLevels);
-        end
+        % if p.PracticeTrials==0
+        %     practiceTestLevels = [];
+        % elseif isempty(myPEST) && isempty(myQUEST)
+        practiceTestLevels = nan(1,p.PracticeTrials);
+        % end
     else
         assert(~isempty(myPEST) || ~isempty(myQUEST),'Specific test levels for ''PracticeTrials'' only allowed if there is an adaptive parameter.');
-        practiceTestLevels = pest.user2pp(p.PracticeTrials);
+        practiceTestLevels = pest.user2pp(p.PracticeTrials); %HOW TO HANDLE THIS INSTEAD
     end
 
     adaptiveUsed=false;
@@ -256,6 +250,7 @@ try
                 dataPoolBase = 0;
                 reportLevel = lpsy.pix2arcsec(pp.VernierOffset);
             end
+           
             if isPracticePhase
                 dataPoolBase = dataPoolBase+4;
             end
@@ -269,7 +264,7 @@ try
 
             %% --- Stimulus presentation and response gathering.
             % Break out of the while loop on escape key press.
-            while true
+             while true
                 %--- Jitter the entire stimulus, usually restricted to an integer multiple of pixels.
                 % For getting, after rounding, the same probability for all integer values, especially for
                 % the min and max integer value, we extend the range for the uniform distribution by �(0.5-epsilon).
@@ -298,7 +293,7 @@ try
                 elseif p.periphDir == 1
                     side = 0;
                 else
-                    side=1;
+                     side=1;
                 end
 
                 if p.periph
@@ -393,14 +388,10 @@ try
                         keyIdx = 1;
                         responseSecs = GetSecs() + 100e-3;
                     else
-                        switch lower(p.AdaptivePmtr)
-                            case 'vdur'
-                                x = lpsy.frame2msec(pp.VernierDuration);
-                                thresh = 50;
-                            otherwise
-                                x = lpsy.pix2arcsec(pp.VernierOffset);
-                                thresh = 40;
-                        end
+                        
+                        x = lpsy.pix2arcsec(pp.VernierOffset);
+                        thresh = 40;
+                        
                         %--- Simulate a cumulative Gaussian response curve in log10-space.
                         thresh = log10(thresh);
                         x = log10(x);
@@ -522,9 +513,10 @@ try
     end % practice/regular
     p.InfoScreenFct(wnd, 'done', p.TestMode~=0);
     if isPracticePhase==0
-        percentCorrect= mean(data.HITS(data.isPractice(:)==0))*100;
+        percentCorrect= mean(data.HITS(data.isPractice(:)==0))*100; % percent correct for the trials that are not considered practice for the Regular Block
     end
     p.InfoScreenFct(wnd, strcat('Percent Correct= ',num2str(percentCorrect),' %'), p.TestMode~=0);
+    disp("Percent Correct= "+ num2str(percentCorrect),' %')
     lpsy.cleanup();
     %% --- Save the data.
     if ~strcmp(p.DvFilename, '')

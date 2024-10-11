@@ -4,7 +4,7 @@ function NoFB_noQuest_run
 
 subjnr = input('Subject Code? ','s');
 
-p.debug=1;
+p.debug=0;
 p.TestMode =9;
  
 %% Basic Setup Parameters
@@ -46,7 +46,7 @@ p.fc_size=500;
  
 %% Chaining the Conditions
 conditions_cond = [1 2 3];
-conditions_start_value = [100, 200, 200]; % OFFSET VALUE SHOULD BE CONSTANT THROUGHGOUT A SINGLE RUN
+conditions_start_value = [100, 200, 200]; % offset value should be constant throughgout a single run
 %ix = randperm(5);
 %conditions_cond = conditions_cond(ix);
 %conditions_start_value = conditions_start_value(ix);

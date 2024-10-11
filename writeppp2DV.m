@@ -11,9 +11,9 @@ function writeppp2DV(p, pp, adaptiveUsed, myPEST, myQUEST, pest, practiceTestLev
     lpsy.writeDvPmtr('Screen distance', p.ScreenDist, 'cm', 0);
     if isscalar(p.PracticeTrials)
         lpsy.writeDvPmtr('Practice trials',p.PracticeTrials,[]);
-        if ~isempty(practiceTestLevels) && ~isnan(practiceTestLevels(1))
-            lpsy.writeDvPmtr('Practice test levels', sprintf('[%.1f,...,%.1f] %s', pest.pp2user(practiceTestLevels([1,end])),pest.userUnit));
-        end
+        % if ~isempty(practiceTestLevels) && ~isnan(practiceTestLevels(1))
+        %     lpsy.writeDvPmtr('Practice test levels', sprintf('[%.1f,...,%.1f] %s', pest.pp2user(practiceTestLevels([1,end])),pest.userUnit));
+        % end
     else
         lpsy.writeDvPmtr('Practice trials',length(p.PracticeTrials),[]);
         lpsy.writeDvPmtr('Practice test levels', p.PracticeTrials, pest.userUnit);
