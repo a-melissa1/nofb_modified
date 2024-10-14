@@ -16,7 +16,7 @@ function writeppp2DV(p, pp, adaptiveUsed, myPEST, myQUEST, pest, practiceTestLev
         % end
     else
         lpsy.writeDvPmtr('Practice trials',length(p.PracticeTrials),[]);
-        lpsy.writeDvPmtr('Practice test levels', p.PracticeTrials, pest.userUnit);
+        %lpsy.writeDvPmtr('Practice test levels', p.PracticeTrials, pest.userUnit);
     end
     lpsy.writeDvPmtr('Start trial repetitions (min/max)',p.StartTrialReps,'');
     lpsy.writeDvPmtr('Trials',p.Trials,[]);

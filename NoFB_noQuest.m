@@ -1,5 +1,6 @@
 function NoFB_noQuest(varargin)
 
+clear global
 
 global sci p pp data
 
@@ -65,7 +66,7 @@ p.addParamValue('fc_size', 1000, @isscalar); % [arcsec] fixation cross line legt
 p.addParamValue('fc_LineColor', [0,0,0], @isvector); % [rgb] fixation cross line color
 p.addParamValue('fc_lw', 150, @isscalar); % [arcsec] fixation cross line width
 p.addParamValue('fc_dur', 0.9, @isscalar); % [secs] fixation cross will be +- 0.5
-
+p.addParamValue("mask_dur",0.1, @isscalar); % [secs] mask duration will be 0.1s
 p.addParamValue('x_pac_offset', 10000, @isscalar); % [arcsec] pacman x offset
 p.addParamValue('pac_radius', 2000, @isscalar); % [arcsec] pacman radius
 p.addParamValue('pac_mouth', 1000, @isscalar); % [arcsec] height of pacman mouth
@@ -198,24 +199,14 @@ try
 
     pChance = 0.5;
     % MODIFY ACCORDINGLY LATER, just to see what happens
-    myPEST=[]; % testing what happens if these are just left empty and never used
-    myQUEST=[]; % testing what happens if these are just left empty and never used
-    pest=[];
-    if isscalar(p.PracticeTrials)
-        % if p.PracticeTrials==0
-        %     practiceTestLevels = [];
-        % elseif isempty(myPEST) && isempty(myQUEST)
-        practiceTestLevels = nan(1,p.PracticeTrials);
-        % end
-    else
-        assert(~isempty(myPEST) || ~isempty(myQUEST),'Specific test levels for ''PracticeTrials'' only allowed if there is an adaptive parameter.');
-        practiceTestLevels = pest.user2pp(p.PracticeTrials); %HOW TO HANDLE THIS INSTEAD
-    end
-
+    % myPEST=[]; % testing what happens if these are just left empty and never used
+    % myQUEST=[]; % testing what happens if these are just left empty and never used
+    % pest=[];
+    % practiceTestLevels=[];
     adaptiveUsed=false;
     %% --- Prepare saving user parameters (more will follow).
     % Doing this here helps detecting errors early on (useful during program development).
-    writeppp2DV(p, pp, adaptiveUsed, myPEST, myQUEST, pest, practiceTestLevels, dontRoundJitterX)
+    writeppp2DV(p, pp, adaptiveUsed, [], [], [], [], dontRoundJitterX)
     %% --- Practice/regular loop.
     if p.TestMode==2
         InteractiveRenderTest();
@@ -228,7 +219,7 @@ try
     vOffsetDir = minusPlusOne(randi(2));
     sameDirCnt = 0;
     phaseName = {'regular','practice'};
-    maxTrialCnt = [p.Trials, length(practiceTestLevels)];
+    maxTrialCnt = [p.Trials, p.PracticeTrials];
     %--- The repetitions of the start trial are controlled by 'startTrialCnt'.
     % We only count valid trials, and the first element counts correct responses
     % in a row, the second element counts all valid repetitions.
@@ -246,7 +237,7 @@ try
         %--- Trial loop
         while trialCntValid < maxTrialCnt(isPracticePhase+1)
             %% --- Get next test level. We shouldn't need to check here for the valid
-            if isempty(myPEST) && isempty(myQUEST)
+            if trialCntValid==0 %isempty(myPEST) && isempty(myQUEST)
                 dataPoolBase = 0;
                 reportLevel = lpsy.pix2arcsec(pp.VernierOffset);
             end
@@ -323,7 +314,7 @@ try
                 % rand gives a number between 0 and 1. -0.5 gives a number
                 % between -0.5 and 0.5. fixation duration is random between
                 % those bounds,
-                fd = p.fc_dur+(rand()-0.5);
+                fd = p.fc_dur; %+(rand()-0.5);
                 WaitSecs(fd);
 
 
@@ -364,7 +355,7 @@ try
                 %% 4. Wait time
                 %prep
                 DrawFixationCross_basic(sci, pp,center(1), center(2))
-                maskdur = 0.1;
+                maskdur = p.mask_dur;
                 maskOffsetSecs = lpsy.flip(sci.wnd, VBLTimestamp, maskdur);
                 %% Time to answer
                 Screen('FillRect', sci.wnd, pp.BgLum, [], []);
@@ -376,7 +367,8 @@ try
                     break
                 end
 
-                %--- Await response.
+                %--- Await response. 
+                % SHOULD I CHANGE SOMETHING HERE ???
                 if any(p.TestMode==[1,9])
                     %--- Fake response.
                     if any(dataCnt==[3,20])
@@ -388,10 +380,8 @@ try
                         keyIdx = 1;
                         responseSecs = GetSecs() + 100e-3;
                     else
-                        
                         x = lpsy.pix2arcsec(pp.VernierOffset);
                         thresh = 40;
-                        
                         %--- Simulate a cumulative Gaussian response curve in log10-space.
                         thresh = log10(thresh);
                         x = log10(x);
@@ -468,28 +458,28 @@ try
 
             %--- Proceed within the trial sequence.
             trialCntValid = trialCntValid + double(isValid);
-            if ~isPracticePhase
-                %--- If we are past the start trial confirmation phase, the
-                % following changes to 'startTrialCnt' will not change that
-                % and will be undone.
-                startTrialCnt(2) = startTrialCnt(2) + double(isValid);
-                if isHit
-                    startTrialCnt(1) = startTrialCnt(1) + 1;
-                else
-                    startTrialCnt(1) = 0;
-                end
-                if any(startTrialCnt >= p.StartTrialReps)
-                    %--- Start trial confirmation phase was or is over - keep it that way
-                    % by setting startTrialCnt(2) to the maximum. This mechanism works
-                    % even when p.StartTrialReps(2)==0.
-                    startTrialCnt(2) = p.StartTrialReps(2);
-                else
-                    %--- Start trial not confirmed: undo the 'trialCntValid' counting from above
-                    % and put the trial into the practice trial pool.
-                    trialCntValid = trialCntValid - double(isValid);
-                    dataPoolBase = dataPoolBase+4;
-                end
-            end
+            % if ~isPracticePhase
+            %     %--- If we are past the start trial confirmation phase, the
+            %     % following changes to 'startTrialCnt' will not change that
+            %     % and will be undone.
+            %     startTrialCnt(2) = startTrialCnt(2) + double(isValid);
+            %     if isHit
+            %         startTrialCnt(1) = startTrialCnt(1) + 1;
+            %     else
+            %         startTrialCnt(1) = 0;
+            %     end
+            %     if any(startTrialCnt >= p.StartTrialReps)
+            %         %--- Start trial confirmation phase was or is over - keep it that way
+            %         % by setting startTrialCnt(2) to the maximum. This mechanism works
+            %         % even when p.StartTrialReps(2)==0.
+            %         startTrialCnt(2) = p.StartTrialReps(2);
+            %     else
+            %         %--- Start trial not confirmed: undo the 'trialCntValid' counting from above
+            %         % and put the trial into the practice trial pool.
+            %         trialCntValid = trialCntValid - double(isValid);
+            %         dataPoolBase = dataPoolBase+4;
+            %     end
+            % end
             %% --- Log the data.
             dataCnt = dataCnt + 1;
             dataPoolBase = dataPoolBase + 100;
@@ -499,7 +489,7 @@ try
             data.HITS(dataCnt) = double(isHit);
             data.REACT_TI(dataCnt) = round(answerTi);
             data.isEarly(dataCnt) = double(isEarly);
-            data.isPractice(dataCnt) = double(isPracticePhase | startTrialCnt(2)<p.StartTrialReps(2));
+            data.isPractice(dataCnt) = double(isPracticePhase);
             data.vOfsDir(dataCnt) = vOffsetDir;
             data.answerDir(dataCnt) = answerDir;
             data.vOfs(dataCnt) = lpsy.pix2arcsec(pp.VernierOffset);
@@ -533,5 +523,7 @@ try
 catch err
     lpsy.cleanup(err);
 end
+
+%clear global
 
 end % end of main function

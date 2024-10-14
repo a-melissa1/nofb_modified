@@ -1,0 +1,83 @@
+PROG = "NoFB_noQuest.m (11.10.2024 16:21) <- NoFB_noQuest_run.m (11.10.2024 16:14)"
+GRAPHICS = "Intel(R) UHD Graphics 770 (core=Intel), GL 4.6.0 - Build 31.0.101.4575"
+HOSTNAME = "SV-09-028"
+SYSTEM = "Windows [Version 10.0.22631.4169]"
+SING_SERVICE = "not installed"
+WLBUTTONS_INFO = "Not used"
+TOOL = "MATLAB [23.2.0.2668659 (R2023b) Update 9]; PsychTB [3.0.19.673554895]; LpsyTB [1.4.45]"
+FLIP_CMD_INFO = "-0.02, 1.60, 4"
+LOCATION = "SV-09-028"
+SYSSETUP_PATH = "C:\Program Files (x86)\SING\General"
+DISPLAY = "unknown, 2560·1440@59Hz/32bpp, 55.4·31.2cm, dist=74.0cm"
+GAMMA_TAB = "Gamma=1.00 with ID vals from LoadIdentityLUT() using measured white curve"
+START_TIME = 1728657514   ;11.10.2024, 16h38
+END_TIME = 1728657610   ;start + 00:01.35
+FLIP_STATS = "[RT off] No errors"
+
+INCLUDE "NoFB_noQuest.idv"
+
+
+SETUP:
+"Screen distance" 74 "cm"
+"Practice trials" 5 ""
+"Start trial repetitions (min/max)": "[3,6]"
+"Trials" 10 ""
+"Volume of negative feedback beep" 20 "%"
+"Volume of warning beep (e.g. early response)" 20 "%"
+"Vernier duration" 50 "ms" 50.8
+"Vernier length (total, including gap)" 4000 "arcsec" 3981.1
+"Vernier vertical gap size" 0 "arcsec" 0.0
+"Vernier offset (possibly PEST start)" 200 "arcsec" 200.0
+"Vernier orientation" 90 "degree"
+"Response timeout (WRT vernier onset, 0:infinite)" 30 "s"
+"ITI (time from response to next vernier onset)": "[0.80, 1.20] s"
+"Line rendering mode": "aaL"
+"Line width" 120 "arcsec" 120.0
+"--> Line width" 2.0 "pix" 1.99
+"Line Color": "[0 0 0]"
+"Fixation Cross Size" 500 "arcsec" 500.0
+"Fixation Cross Line Width" 100 "arcsec" 100.0
+"Fixation Cross Duration" 0.9 "s"
+"Experiment Condition" 3 ""
+"Pacman X Offset" 16000 "arcsec" 15984.9
+"Pacman Radius" 1800 "arcsec" 1800.0
+"Pacman Mouth" 2300 "arcsec" 2292.2
+"Flanker Offset" 950 "arcsec" 950.0
+"Number of Flankers" 10.0 "" 10.00
+"Flanker Length" 1000 "arcsec" 1000.0
+"Vernier Orientation" 90 "degrees"
+"Peripheral Presentation" 1 ""
+"Peripheral Offset" 5 "arcdeg" 5.0
+"Peripheral Direction" 2 ""
+"Background Luminance" 50 "%"
+"Background luminance" 50.0 "%" 50.00
+"X position jitter (±, continuous)" 1.9 "pix" 1.90
+"Y position jitter (±, whole pixels)" 1.9 "pix" 2.00
+"Bug mode (0: no bug)" 0 ""
+"Screen #" 0 ""
+SETUP_END
+
+
+POOL[0].DATA:	POOL	LEVEL	VALID	HITS	REACT_TI	isEarly	isPractice	vOfsDir	answerDir	vOfs	vDur	iti	vOnsetTi	stimSide	fc_dur
+	105 	200 	1 	0 	946 	0 	1 	-1 	1 	200.0 	50.8 	1032 	0.000 	1 	0.9000 
+	210 	200 	1 	0 	4187 	0 	1 	1 	-1 	200.0 	50.8 	1154 	3.319 	1 	0.9000 
+	313 	200 	1 	0 	9243 	0 	1 	-1 	1 	200.0 	50.8 	963 	9.691 	1 	0.9000 
+	417 	200 	1 	0 	1188 	0 	1 	-1 	1 	200.0 	50.8 	1195 	21.318 	1 	0.9000 
+	522 	200 	1 	1 	5351 	0 	1 	1 	1 	200.0 	50.8 	960 	24.670 	1 	0.9000 
+	101 	200 	1 	0 	572 	0 	0 	-1 	1 	200.0 	50.8 	951 	34.945 	1 	0.9000 
+	202 	200 	1 	1 	2383 	0 	0 	1 	1 	200.0 	50.8 	917 	37.731 	1 	0.9000 
+	301 	200 	1 	0 	4367 	0 	0 	-1 	1 	200.0 	50.8 	965 	42.251 	1 	0.9000 
+	401 	200 	1 	0 	3653 	0 	0 	-1 	1 	200.0 	50.8 	1124 	48.957 	1 	0.9000 
+	501 	200 	1 	1 	2300 	0 	0 	-1 	-1 	200.0 	50.8 	859 	54.678 	1 	0.9000 
+	602 	200 	1 	1 	634 	0 	0 	1 	1 	200.0 	50.8 	883 	59.032 	1 	0.9000 
+	701 	200 	1 	0 	5749 	0 	0 	-1 	1 	200.0 	50.8 	1069 	61.901 	1 	0.9000 
+	802 	200 	1 	0 	704 	0 	0 	1 	-1 	200.0 	50.8 	921 	69.774 	1 	0.9000 
+	901 	200 	1 	0 	4721 	0 	0 	-1 	1 	200.0 	50.8 	878 	72.576 	1 	0.9000 
+	1001 	200 	1 	0 	4179 	0 	0 	-1 	1 	200.0 	50.8 	975 	79.499 	1 	0.9000 
+	101 	200 	1 	1 	752 	0 	0 	-1 	-1 	200.0 	33.9 	50 	-19321644.736 	1 	0.5767 
+	101 	200 	1 	1 	793 	0 	0 	-1 	-1 	200.0 	33.9 	50 	-19321642.635 	1 	1.3689 
+	101 	200 	1 	1 	757 	0 	0 	-1 	-1 	200.0 	33.9 	50 	-19321640.967 	1 	0.9309 
+	101 	200 	1 	0 	4946 	0 	0 	-1 	1 	200.0 	50.8 	1131 	-24843171.093 	1 	1.3625 
+	102 	200 	1 	1 	621 	0 	0 	1 	1 	200.0 	50.8 	1179 	-24843164.004 	1 	0.6320 
+DATA_END
+

@@ -1,17 +1,17 @@
 function NoFB_noQuest_run
 
-%clear global variables % CHECK THIS, SHOULD IT BE KEPT OR REMOVED
+clear global % CHECK THIS, SHOULD IT BE KEPT OR REMOVED
 
 subjnr = input('Subject Code? ','s');
 
 p.debug=1;
-p.TestMode =9;
+p.TestMode =0;
  
 %% Basic Setup Parameters
 p.ScreenDist = 74;
  
 %% Experiment Details
-p.PracticeTrials = 0; %10;%8
+p.PracticeTrials =5; %10;%8
 p.LineColor = [0,0,0];
  
 % Vernier
